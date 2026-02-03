@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/quxtech/qux-pqc"
 documentation = "https://docs.rs/qux-pqc"
 readme = "README.md"
-keywords = ["cryptography", "post-quantum", "ml-kem", "ml-dsa", "kyber", "dilithium"]
+keywords = ["cryptography", "post-quantum", "ml-kem", "ml-dsa", "pqc"]
 categories = ["cryptography", "no-std"]
 rust-version = "1.70"
 
