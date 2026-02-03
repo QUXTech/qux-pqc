@@ -106,8 +106,7 @@ pub fn encrypt(plaintext: &[u8], key: &[u8]) -> Result<EncryptedData> {
         });
     }
 
-    let cipher = Aes256Gcm::new_from_slice(key)
-        .map_err(|e| Error::Encryption(e.to_string()))?;
+    let cipher = Aes256Gcm::new_from_slice(key).map_err(|e| Error::Encryption(e.to_string()))?;
 
     let nonce_bytes = generate_nonce();
     let nonce = Nonce::from_slice(&nonce_bytes);
@@ -145,8 +144,7 @@ pub fn decrypt(encrypted: &EncryptedData, key: &[u8]) -> Result<Vec<u8>> {
         });
     }
 
-    let cipher = Aes256Gcm::new_from_slice(key)
-        .map_err(|e| Error::Decryption(e.to_string()))?;
+    let cipher = Aes256Gcm::new_from_slice(key).map_err(|e| Error::Decryption(e.to_string()))?;
 
     let nonce = Nonce::from_slice(&encrypted.nonce);
 

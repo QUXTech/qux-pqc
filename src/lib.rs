@@ -166,10 +166,8 @@ pub fn encrypt_and_sign(
     security_level: SecurityLevel,
 ) -> Result<EncryptedSignedPayload> {
     // Encapsulate to get shared secret
-    let (kem_ciphertext, shared_secret) = kem::encapsulate_with_level(
-        recipient_kem_public_key,
-        security_level,
-    )?;
+    let (kem_ciphertext, shared_secret) =
+        kem::encapsulate_with_level(recipient_kem_public_key, security_level)?;
 
     // Encrypt data with shared secret
     let encrypted = symmetric::encrypt_with_secret(data, &shared_secret)?;
@@ -261,7 +259,10 @@ pub fn algorithm_info(level: SecurityLevel) -> AlgorithmInfo {
         symmetric: "AES-256-GCM".to_string(),
         hash: "SHA3-256/512".to_string(),
         security_level: level,
-        nist_fips: vec!["FIPS 203 (ML-KEM)".to_string(), "FIPS 204 (ML-DSA)".to_string()],
+        nist_fips: vec![
+            "FIPS 203 (ML-KEM)".to_string(),
+            "FIPS 204 (ML-DSA)".to_string(),
+        ],
     }
 }
 
@@ -313,14 +314,12 @@ mod tests {
             &bob.kem.public_key,
             &alice.dsa.secret_key,
             SecurityLevel::Level5,
-        ).unwrap();
+        )
+        .unwrap();
 
         // Bob verifies and decrypts
-        let decrypted = verify_and_decrypt(
-            &payload,
-            &alice.dsa.public_key,
-            &bob.kem.secret_key,
-        ).unwrap();
+        let decrypted =
+            verify_and_decrypt(&payload, &alice.dsa.public_key, &bob.kem.secret_key).unwrap();
 
         assert_eq!(message.as_slice(), decrypted.as_slice());
     }

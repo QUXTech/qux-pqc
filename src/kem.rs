@@ -6,7 +6,7 @@
 
 use crate::error::{Error, Result};
 use crate::SecurityLevel;
-use pqcrypto_kyber::{kyber768, kyber1024};
+use pqcrypto_kyber::{kyber1024, kyber768};
 use pqcrypto_traits::kem::{Ciphertext, PublicKey, SecretKey, SharedSecret};
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, ZeroizeOnDrop};
@@ -109,8 +109,8 @@ pub fn encapsulate_with_level(
 ) -> Result<(Vec<u8>, Vec<u8>)> {
     match level {
         SecurityLevel::Level3 => {
-            let pk = kyber768::PublicKey::from_bytes(public_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let pk =
+                kyber768::PublicKey::from_bytes(public_key).map_err(|_| Error::InvalidKeySize {
                     expected: kyber768::public_key_bytes(),
                     actual: public_key.len(),
                 })?;
@@ -118,11 +118,12 @@ pub fn encapsulate_with_level(
             Ok((ct.as_bytes().to_vec(), ss.as_bytes().to_vec()))
         }
         SecurityLevel::Level5 => {
-            let pk = kyber1024::PublicKey::from_bytes(public_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let pk = kyber1024::PublicKey::from_bytes(public_key).map_err(|_| {
+                Error::InvalidKeySize {
                     expected: kyber1024::public_key_bytes(),
                     actual: public_key.len(),
-                })?;
+                }
+            })?;
             let (ss, ct) = kyber1024::encapsulate(&pk);
             Ok((ct.as_bytes().to_vec(), ss.as_bytes().to_vec()))
         }
@@ -159,8 +160,8 @@ pub fn decapsulate_with_level(
 ) -> Result<Vec<u8>> {
     match level {
         SecurityLevel::Level3 => {
-            let sk = kyber768::SecretKey::from_bytes(secret_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let sk =
+                kyber768::SecretKey::from_bytes(secret_key).map_err(|_| Error::InvalidKeySize {
                     expected: kyber768::secret_key_bytes(),
                     actual: secret_key.len(),
                 })?;
@@ -170,11 +171,12 @@ pub fn decapsulate_with_level(
             Ok(ss.as_bytes().to_vec())
         }
         SecurityLevel::Level5 => {
-            let sk = kyber1024::SecretKey::from_bytes(secret_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let sk = kyber1024::SecretKey::from_bytes(secret_key).map_err(|_| {
+                Error::InvalidKeySize {
                     expected: kyber1024::secret_key_bytes(),
                     actual: secret_key.len(),
-                })?;
+                }
+            })?;
             let ct = kyber1024::Ciphertext::from_bytes(ciphertext)
                 .map_err(|_| Error::InvalidCiphertext("Invalid Level 5 ciphertext".into()))?;
             let ss = kyber1024::decapsulate(&ct, &sk);
@@ -227,15 +229,27 @@ mod tests {
     #[test]
     fn test_keypair_generation_level5() {
         let keys = generate_keypair(SecurityLevel::Level5).unwrap();
-        assert_eq!(keys.public_key.len(), public_key_size(SecurityLevel::Level5));
-        assert_eq!(keys.secret_key.len(), secret_key_size(SecurityLevel::Level5));
+        assert_eq!(
+            keys.public_key.len(),
+            public_key_size(SecurityLevel::Level5)
+        );
+        assert_eq!(
+            keys.secret_key.len(),
+            secret_key_size(SecurityLevel::Level5)
+        );
     }
 
     #[test]
     fn test_keypair_generation_level3() {
         let keys = generate_keypair(SecurityLevel::Level3).unwrap();
-        assert_eq!(keys.public_key.len(), public_key_size(SecurityLevel::Level3));
-        assert_eq!(keys.secret_key.len(), secret_key_size(SecurityLevel::Level3));
+        assert_eq!(
+            keys.public_key.len(),
+            public_key_size(SecurityLevel::Level3)
+        );
+        assert_eq!(
+            keys.secret_key.len(),
+            secret_key_size(SecurityLevel::Level3)
+        );
     }
 
     #[test]

@@ -90,8 +90,7 @@ impl ServerKeys {
         };
 
         let json_bytes = symmetric::decrypt(&encrypted, &key)?;
-        let json = String::from_utf8(json_bytes)
-            .map_err(|e| Error::KeyStorage(e.to_string()))?;
+        let json = String::from_utf8(json_bytes).map_err(|e| Error::KeyStorage(e.to_string()))?;
 
         Ok(serde_json::from_str(&json)?)
     }

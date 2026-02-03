@@ -103,27 +103,25 @@ pub fn sign(message: &[u8], secret_key: &[u8]) -> Result<Vec<u8>> {
 }
 
 /// Sign with explicit security level
-pub fn sign_with_level(
-    message: &[u8],
-    secret_key: &[u8],
-    level: SecurityLevel,
-) -> Result<Vec<u8>> {
+pub fn sign_with_level(message: &[u8], secret_key: &[u8], level: SecurityLevel) -> Result<Vec<u8>> {
     match level {
         SecurityLevel::Level3 => {
-            let sk = dilithium3::SecretKey::from_bytes(secret_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let sk = dilithium3::SecretKey::from_bytes(secret_key).map_err(|_| {
+                Error::InvalidKeySize {
                     expected: dilithium3::secret_key_bytes(),
                     actual: secret_key.len(),
-                })?;
+                }
+            })?;
             let sig = dilithium3::detached_sign(message, &sk);
             Ok(sig.as_bytes().to_vec())
         }
         SecurityLevel::Level5 => {
-            let sk = dilithium5::SecretKey::from_bytes(secret_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let sk = dilithium5::SecretKey::from_bytes(secret_key).map_err(|_| {
+                Error::InvalidKeySize {
                     expected: dilithium5::secret_key_bytes(),
                     actual: secret_key.len(),
-                })?;
+                }
+            })?;
             let sig = dilithium5::detached_sign(message, &sk);
             Ok(sig.as_bytes().to_vec())
         }
@@ -162,21 +160,23 @@ pub fn verify_with_level(
 ) -> Result<bool> {
     match level {
         SecurityLevel::Level3 => {
-            let pk = dilithium3::PublicKey::from_bytes(public_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let pk = dilithium3::PublicKey::from_bytes(public_key).map_err(|_| {
+                Error::InvalidKeySize {
                     expected: dilithium3::public_key_bytes(),
                     actual: public_key.len(),
-                })?;
+                }
+            })?;
             let sig = dilithium3::DetachedSignature::from_bytes(signature)
                 .map_err(|_| Error::InvalidSignature("Invalid Level 3 signature".into()))?;
             Ok(dilithium3::verify_detached_signature(&sig, message, &pk).is_ok())
         }
         SecurityLevel::Level5 => {
-            let pk = dilithium5::PublicKey::from_bytes(public_key)
-                .map_err(|_| Error::InvalidKeySize {
+            let pk = dilithium5::PublicKey::from_bytes(public_key).map_err(|_| {
+                Error::InvalidKeySize {
                     expected: dilithium5::public_key_bytes(),
                     actual: public_key.len(),
-                })?;
+                }
+            })?;
             let sig = dilithium5::DetachedSignature::from_bytes(signature)
                 .map_err(|_| Error::InvalidSignature("Invalid Level 5 signature".into()))?;
             Ok(dilithium5::verify_detached_signature(&sig, message, &pk).is_ok())
@@ -206,7 +206,10 @@ pub fn sign_with_timestamp(
 
     let signature = sign_with_level(&data_to_sign, secret_key, level)?;
 
-    Ok(TimestampedSignature { signature, timestamp })
+    Ok(TimestampedSignature {
+        signature,
+        timestamp,
+    })
 }
 
 /// Verify a timestamped signature
@@ -238,7 +241,12 @@ pub fn verify_with_timestamp(
     let mut data_to_verify = message.to_vec();
     data_to_verify.extend_from_slice(&timestamped_sig.timestamp.to_le_bytes());
 
-    verify_with_level(&data_to_verify, &timestamped_sig.signature, public_key, level)
+    verify_with_level(
+        &data_to_verify,
+        &timestamped_sig.signature,
+        public_key,
+        level,
+    )
 }
 
 /// Get the public key size for a security level
@@ -280,15 +288,27 @@ mod tests {
     #[test]
     fn test_keypair_generation_level5() {
         let keys = generate_keypair(SecurityLevel::Level5).unwrap();
-        assert_eq!(keys.public_key.len(), public_key_size(SecurityLevel::Level5));
-        assert_eq!(keys.secret_key.len(), secret_key_size(SecurityLevel::Level5));
+        assert_eq!(
+            keys.public_key.len(),
+            public_key_size(SecurityLevel::Level5)
+        );
+        assert_eq!(
+            keys.secret_key.len(),
+            secret_key_size(SecurityLevel::Level5)
+        );
     }
 
     #[test]
     fn test_keypair_generation_level3() {
         let keys = generate_keypair(SecurityLevel::Level3).unwrap();
-        assert_eq!(keys.public_key.len(), public_key_size(SecurityLevel::Level3));
-        assert_eq!(keys.secret_key.len(), secret_key_size(SecurityLevel::Level3));
+        assert_eq!(
+            keys.public_key.len(),
+            public_key_size(SecurityLevel::Level3)
+        );
+        assert_eq!(
+            keys.secret_key.len(),
+            secret_key_size(SecurityLevel::Level3)
+        );
     }
 
     #[test]
@@ -362,7 +382,8 @@ mod tests {
             &keys.public_key,
             300,
             SecurityLevel::Level5,
-        ).unwrap();
+        )
+        .unwrap();
 
         assert!(valid);
     }
