@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "rust"
+    groups:
+      pqc-dependencies:
+        patterns:
+          - "pqcrypto*"
+      crypto-dependencies:
+        patterns:
+          - "aes*"
+          - "sha3"
+          - "hkdf"
+          - "zeroize"
+      minor-updates:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
