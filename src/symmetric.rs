@@ -59,7 +59,7 @@ impl EncryptionKey {
 /// A 32-byte random key
 pub fn generate_key() -> [u8; KEY_SIZE] {
     let mut key = [0u8; KEY_SIZE];
-    rand::thread_rng().fill_bytes(&mut key);
+    rand::rng().fill_bytes(&mut key);
     key
 }
 
@@ -69,7 +69,7 @@ pub fn generate_key() -> [u8; KEY_SIZE] {
 /// A 12-byte random nonce for AES-GCM
 pub fn generate_nonce() -> [u8; NONCE_SIZE] {
     let mut nonce = [0u8; NONCE_SIZE];
-    rand::thread_rng().fill_bytes(&mut nonce);
+    rand::rng().fill_bytes(&mut nonce);
     nonce
 }
 

@@ -169,7 +169,7 @@ struct EncryptedKeyContainer {
 fn generate_key_id() -> String {
     use rand::RngCore;
     let mut bytes = [0u8; 16];
-    rand::thread_rng().fill_bytes(&mut bytes);
+    rand::rng().fill_bytes(&mut bytes);
     format!("qux-{}", hex::encode(bytes))
 }
 

@@ -52,7 +52,7 @@ pub fn sha3_512_hex(data: &[u8]) -> String {
 pub fn random_hex(byte_length: usize) -> String {
     use rand::RngCore;
     let mut bytes = vec![0u8; byte_length];
-    rand::thread_rng().fill_bytes(&mut bytes);
+    rand::rng().fill_bytes(&mut bytes);
     hex::encode(bytes)
 }
 
@@ -61,7 +61,7 @@ pub fn random_base64(byte_length: usize) -> String {
     use base64::{engine::general_purpose::STANDARD, Engine};
     use rand::RngCore;
     let mut bytes = vec![0u8; byte_length];
-    rand::thread_rng().fill_bytes(&mut bytes);
+    rand::rng().fill_bytes(&mut bytes);
     STANDARD.encode(bytes)
 }
 
